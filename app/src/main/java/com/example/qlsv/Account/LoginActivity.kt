@@ -21,8 +21,8 @@ class LoginActivity : AppCompatActivity() {
 
     private fun clickEvents() {
         binding.txtForgetPassword.setOnClickListener {
-//            val intent = Intent(this, ForgetPasswordActivity::class.java)
-//            startActivity(intent)
+            val intent = Intent(this, ForgetPasswordActivity::class.java)
+            startActivity(intent)
         }
         binding.txtRegister.setOnClickListener {
             val intent = Intent(this, RegisterActivity::class.java)
