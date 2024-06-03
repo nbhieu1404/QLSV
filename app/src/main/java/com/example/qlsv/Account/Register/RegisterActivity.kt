@@ -1,46 +1,68 @@
-package com.example.qlsv.Account
+package com.example.qlsv.Account.Register
 
 import android.graphics.Color
 import android.os.Bundle
+import android.os.Handler
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.View
-import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
+import androidx.core.content.ContextCompat
 import com.example.qlsv.R
 import com.example.qlsv.databinding.ActivityRegisterBinding
 import android.util.Patterns
 import android.widget.Toast
-import androidx.core.content.ContextCompat
-import java.util.regex.Pattern
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseAuthUserCollisionException
+import com.google.firebase.firestore.FirebaseFirestore
 
-class RegisterActivity : AppCompatActivity() {
+class RegisterActivity : AppCompatActivity(), RegisterInterface {
     private lateinit var binding: ActivityRegisterBinding
-    private var STATUS_REGISTER_SUCCESS: Boolean = false
+    private lateinit var presenter: RegisterPresenter
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityRegisterBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        presenter = RegisterPresenter(this)
 
         clickEvents()
     }
 
     private fun clickEvents() {
         binding.txtLogin.setOnClickListener {
-            finish()
+            binding.txtLogin.setTextColor(resources.getColor(R.color.blue))
+            Handler().postDelayed({
+                binding.txtLogin.setTextColor(resources.getColor(R.color.blue_status))
+                finish()
+            }, 100)
+
         }
         binding.btnSignUp.setOnClickListener {
-            if (validateInputs()) {
-                signUp()
-            } else {
-                Toast.makeText(this, "Đăng ký không thành công", Toast.LENGTH_SHORT).show()
+            val email = binding.edtEmail.text.toString().trim()
+            val password = binding.edtPassword.text.toString().trim()
+            val username = binding.edtUsername.text.toString().trim()
+            val passwordConfirm = binding.edtPasswordConfirm.text.toString().trim()
+            val policy = binding.cbPolicy.isChecked
+
+            if (presenter.validateInputs(username, email, password, passwordConfirm, policy)) {
+                presenter.signUp(email, password, username)
             }
         }
-        setupInputValidation()
+        binding.btnBack.setOnClickListener {
+            val handler = Handler()
+            binding.btnBack.setImageResource(R.drawable.icon_back_gray)
+            handler.postDelayed({
+                binding.btnBack.setImageResource(R.drawable.icon_back_white)
+                finish()
+            }, 100)
 
+        }
+        setupInputValidation()
     }
+
 
     private fun setupInputValidation() {
         binding.edtUsername.addTextChangedListener(object : TextWatcher {
@@ -150,14 +172,6 @@ class RegisterActivity : AppCompatActivity() {
                 }
             }
         })
-    }
-
-    private fun validateInputs(): Boolean {
-        val isUsernameValid = binding.txtErrorUsername.visibility == View.INVISIBLE
-        val isEmailValid = binding.txtErrorEmail.visibility == View.INVISIBLE
-        val isPasswordValid = binding.txtErrorPassword.visibility == View.INVISIBLE
-        val isPasswordConfirmValid = binding.txtErrorPasswordConfirm.visibility == View.INVISIBLE
-        val isPolicyAccepted = binding.cbPolicy.isChecked
 
         binding.cbPolicy.setOnCheckedChangeListener { _, isChecked ->
             if (isChecked) {
@@ -168,24 +182,57 @@ class RegisterActivity : AppCompatActivity() {
                 binding.txtAccept.setTextColor(Color.RED)
             }
         }
-        binding.txtAccept.setTextColor(if (isPolicyAccepted) Color.BLACK else Color.RED)
-        binding.txtPolicy.setTextColor(
-            if (isPolicyAccepted) ContextCompat.getColor(
-                this,
-                R.color.blue_status
-            ) else Color.RED
-        )
-
-        return isUsernameValid && isEmailValid && isPasswordValid && isPasswordConfirmValid && isPolicyAccepted
-    }
-
-
-    private fun signUp() {
-        Toast.makeText(this, "Đăng ký thành công", Toast.LENGTH_SHORT).show()
     }
 
     fun hasSpecialCharacters(string: String): Boolean {
         val regex = Regex("[^\\w\\s]")
         return regex.containsMatchIn(string)
     }
+
+    override fun showErrorUsername(message: String) {
+        binding.txtErrorUsername.text = message
+        binding.txtErrorUsername.visibility = View.VISIBLE
+    }
+
+    override fun showErrorEmail(message: String) {
+        binding.txtErrorEmail.text = message
+        binding.txtErrorEmail.visibility = View.VISIBLE
+    }
+
+    override fun showErrorPassword(message: String) {
+        binding.txtErrorPassword.text = message
+        binding.txtErrorPassword.visibility = View.VISIBLE
+    }
+
+    override fun showErrorPasswordConfirm(message: String) {
+        binding.txtErrorPasswordConfirm.text = message
+        binding.txtErrorPasswordConfirm.visibility = View.VISIBLE
+    }
+
+    override fun showPolicyError(isError: Boolean) {
+        val color = if (isError) Color.RED else ContextCompat.getColor(this, R.color.blue_status)
+        binding.txtPolicy.setTextColor(color)
+        binding.txtAccept.setTextColor(color)
+    }
+
+    override fun enableDisplay(status: Boolean) {
+        binding.edtUsername.isEnabled = status
+        binding.edtEmail.isEnabled = status
+        binding.edtPassword.isEnabled = status
+        binding.edtPasswordConfirm.isEnabled = status
+        binding.cbPolicy.isEnabled = status
+        binding.btnSignUp.isEnabled = status
+        binding.txtLogin.isEnabled = status
+        binding.layoutProgressBar.visibility = if (status) View.GONE else View.VISIBLE
+    }
+
+
+    override fun showToast(message: String) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+    }
+
+    override fun finishActivity() {
+        finish()
+    }
+
 }
