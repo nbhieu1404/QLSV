@@ -126,13 +126,12 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentEnd="true"
-                    android:background="?attr/selectableItemBackgroundBorderless"
                     android:clickable="true"
                     android:focusable="true"
                     android:paddingVertical="5dp"
                     android:paddingTop="10dp"
                     android:text="Quên mật khẩu?"
-                    android:textColor="#787379"
+                    android:textColor="@color/gray"
                     android:textSize="14sp"
                     android:textStyle="italic" />
             </RelativeLayout>
@@ -221,5 +220,24 @@
                     android:src="@drawable/icon_facebook" />
             </LinearLayout>
         </LinearLayout>
+        <RelativeLayout
+            android:id="@+id/layout_ProgressBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="100dp"
+            android:background="@drawable/custom_progressbar"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <ProgressBar
+                android:id="@+id/layoutProgressBar"
+                android:layout_width="70dp"
+                android:layout_height="70dp"
+                android:layout_centerInParent="true"
+                android:padding="15dp" />
+        </RelativeLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>
