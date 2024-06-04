@@ -122,6 +122,20 @@
                 android:layout_marginTop="10dp">
 
                 <TextView
+                    android:id="@+id/txt_ErrorLogin"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentStart="true"
+                    android:paddingVertical="5dp"
+                    android:paddingTop="10dp"
+                    android:text="Vui lòng nhập email và mật khẩu"
+                    android:textColor="@color/red"
+                    android:textSize="14sp"
+                    android:textStyle="italic"
+                    android:visibility="invisible"
+                    />
+
+                <TextView
                     android:id="@+id/txt_ForgetPassword"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -165,7 +179,6 @@
                     android:id="@+id/txt_Register"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:background="?attr/selectableItemBackgroundBorderless"
                     android:clickable="true"
                     android:focusable="true"
                     android:text=" Đăng ký"
@@ -220,6 +233,7 @@
                     android:src="@drawable/icon_facebook" />
             </LinearLayout>
         </LinearLayout>
+
         <RelativeLayout
             android:id="@+id/layout_ProgressBar"
             android:layout_width="wrap_content"

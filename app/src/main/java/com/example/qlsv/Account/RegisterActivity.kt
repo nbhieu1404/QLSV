@@ -3,6 +3,7 @@ package com.example.qlsv.Account
 import android.content.Intent
 import android.content.res.Resources
 import android.graphics.Color
+import android.nfc.Tag
 import android.os.Bundle
 import android.os.Handler
 import android.text.Editable
@@ -51,20 +52,18 @@ class RegisterActivity : AppCompatActivity() {
 
         }
         binding.btnSignUp.setOnClickListener {
-
             if (validateInputs()) {
+                Log.d("click", "click")
                 enableDisplay(false)
                 val email = binding.edtEmail.text.toString().trim()
                 val password = binding.edtPassword.text.toString().trim()
                 val username = binding.edtUsername.text.toString().trim()
                 signUp(email, password, username)
-
             } else {
+
                 errorsRegister()
             }
-
         }
-
         binding.btnBack.setOnClickListener {
             val handler = Handler()
             binding.btnBack.setImageResource(R.drawable.icon_back_gray)
@@ -74,7 +73,6 @@ class RegisterActivity : AppCompatActivity() {
             }, 100)
 
         }
-
         setupInputValidation()
     }
 
@@ -243,7 +241,7 @@ class RegisterActivity : AppCompatActivity() {
         val inputEmail = binding.edtEmail.text.toString().trim()
         val inputPassword = binding.edtPassword.text.toString().trim()
         val inputPasswordConfirm = binding.edtPasswordConfirm.text.toString().trim()
-        if (inputUsername.isBlank() && inputEmail.isBlank() && inputPassword.isBlank() && inputPasswordConfirm.isBlank()) {
+        if (inputUsername.isNotEmpty() && inputEmail.isNotEmpty() && inputPassword.isNotEmpty() && inputPasswordConfirm.isNotEmpty()) {
             return isUsernameValid && isEmailValid && isPasswordValid && isPasswordConfirmValid && isPolicyAccepted
         }
         return false

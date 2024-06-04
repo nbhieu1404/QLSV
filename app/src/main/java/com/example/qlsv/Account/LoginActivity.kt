@@ -5,6 +5,8 @@ import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.View
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
@@ -19,6 +21,7 @@ import com.google.firebase.auth.FirebaseAuth
 class LoginActivity : AppCompatActivity() {
     private lateinit var binding: ActivityLoginBinding
     private lateinit var auth: FirebaseAuth
+    private val handler = Handler()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityLoginBinding.inflate(layoutInflater)
@@ -29,7 +32,6 @@ class LoginActivity : AppCompatActivity() {
 
     private fun clickEvents() {
         binding.txtForgetPassword.setOnClickListener {
-            val handler = Handler()
             binding.txtForgetPassword.setTextColor(resources.getColor(R.color.blue))
             handler.postDelayed({
                 binding.txtForgetPassword.setTextColor(resources.getColor(R.color.gray))
@@ -38,20 +40,57 @@ class LoginActivity : AppCompatActivity() {
             }, 100)
         }
         binding.txtRegister.setOnClickListener {
-            val intent = Intent(this, RegisterActivity::class.java)
-            startActivity(intent)
+            binding.txtRegister.setTextColor(resources.getColor(R.color.black))
+            handler.postDelayed({
+                binding.txtRegister.setTextColor(resources.getColor(R.color.blue))
+                val intent = Intent(this, RegisterActivity::class.java)
+                startActivity(intent)
+            }, 100)
+
         }
         binding.btnLogin.setOnClickListener {
             val email = binding.edtEmail.text.toString().trim()
             val password = binding.edtPassword.text.toString().trim()
             if (email.isNotEmpty() && password.isNotEmpty()) {
                 login(email, password)
+            } else {
+                binding.txtErrorLogin.text = "Vui lòng nhập Email và mật khẩu"
+                binding.txtErrorLogin.visibility = View.VISIBLE
             }
         }
+        setupInputValidation()
+    }
+
+    private fun setupInputValidation() {
+        binding.edtEmail.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                binding.txtErrorLogin.visibility = View.INVISIBLE
+            }
+
+            override fun afterTextChanged(s: Editable?) {
+            }
+
+        })
+
+        binding.edtPassword.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                binding.txtErrorLogin.visibility = View.INVISIBLE
+            }
+
+            override fun afterTextChanged(s: Editable?) {
+            }
+
+        })
     }
 
     private fun login(email: String, password: String) {
-        enableDisplay(true)
+        enableDisplay(false)
         auth.signInWithEmailAndPassword(email, password)
             .addOnCompleteListener(this) { task ->
                 if (task.isSuccessful) {
@@ -64,19 +103,15 @@ class LoginActivity : AppCompatActivity() {
                             finish()
 
                         } else {
-                            Toast.makeText(
-                                this, "Email chưa được xác thực",
-                                Toast.LENGTH_SHORT
-                            ).show()
-                            enableDisplay(false)
+                            binding.txtErrorLogin.text = "Email chưa được xác thực"
+                            binding.txtErrorLogin.visibility = View.VISIBLE
+                            enableDisplay(true)
                         }
                     }
                 } else {
-                    Toast.makeText(
-                        this, "Email hoặc mật khẩu chính xác",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                    enableDisplay(false)
+                    binding.txtErrorLogin.text = "Email hoặc mật khẩu không chính xác"
+                    binding.txtErrorLogin.visibility = View.VISIBLE
+                    enableDisplay(true)
                 }
             }
     }
