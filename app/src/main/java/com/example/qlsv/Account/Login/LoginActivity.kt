@@ -4,6 +4,8 @@ import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.content.DialogInterface
 import android.content.Intent
+import android.content.IntentFilter
+import android.net.ConnectivityManager
 import android.os.Bundle
 import android.os.Handler
 import android.text.Editable
@@ -16,17 +18,23 @@ import com.example.qlsv.Account.Register.RegisterActivity
 import com.example.qlsv.MainActivity
 import com.example.qlsv.R
 import com.example.qlsv.databinding.ActivityLoginBinding
+import com.example.qlsv.status.WifiBroadcastReceiver
 
 class LoginActivity : AppCompatActivity(), LoginInterface {
     private lateinit var binding: ActivityLoginBinding
     private lateinit var presenter: LoginPresenter
     private val handler = Handler()
+    private lateinit var wifiReceiver: WifiBroadcastReceiver
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityLoginBinding.inflate(layoutInflater)
         setContentView(binding.root)
         presenter = LoginPresenter(this)
+        wifiReceiver = WifiBroadcastReceiver()
+        val intentFilter = IntentFilter()
+        intentFilter.addAction(ConnectivityManager.CONNECTIVITY_ACTION)
+        registerReceiver(wifiReceiver, intentFilter)
         clickEvents()
     }
 
