@@ -23,14 +23,14 @@ class ForgetPasswordPresenter(private val view: ForgetPasswordInterface) {
             .addOnCompleteListener { result ->
                 if (result.isSuccessful) {
                     view.showToast("Kiểm tra Email để đặt lại mật khẩu")
-                    view.finishActivity()
+                    view.finishActivity(0)
                 } else {
                     view.showToast(result.exception.toString())
                 }
             }
     }
 
-    fun backLoginActivity() {
-        view.finishActivity()
+    fun backLoginActivity(code: Int) {
+        view.finishActivity(code)
     }
 }

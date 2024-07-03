@@ -8,5 +8,5 @@ interface RegisterInterface {
     fun showPolicyError(isError: Boolean)
     fun enableDisplay(status: Boolean)
     fun showToast(message: String)
-    fun finishActivity()
+    fun finishActivity(code: Int)
 }

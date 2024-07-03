@@ -14,6 +14,8 @@ import com.google.firebase.auth.FirebaseAuth
 class ForgetPasswordActivity : AppCompatActivity(), ForgetPasswordInterface {
     private lateinit var binding: ActivityForgetPasswordBinding
     private lateinit var presenter: ForgetPasswordPresenter
+    private val BACK_LOGIN_TEXT = 1
+    private val BACK_LOGIN_ICON = 2
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -26,25 +28,19 @@ class ForgetPasswordActivity : AppCompatActivity(), ForgetPasswordInterface {
 
     private fun clickEvents() {
         binding.txtLogin.setOnClickListener {
-            val handler = Handler()
-            binding.txtLogin.setTextColor(resources.getColor(R.color.blue))
-            handler.postDelayed({
-                binding.txtLogin.setTextColor(resources.getColor(R.color.black))
-                finish()
-            }, 100)
+            presenter.backLoginActivity(BACK_LOGIN_TEXT)
         }
 
         binding.btnConfirm.setOnClickListener {
-            presenter.onConfirmClicked(binding.edtEmail.text.toString())
+            val inputEmail = binding.edtEmail.text.toString().trim()
+            if (presenter.handleForgetPassword(inputEmail)) {
+                presenter.resetPassword(inputEmail)
+
+            }
         }
 
         binding.btnBack.setOnClickListener {
-            val handler = Handler()
-            binding.btnBack.setImageResource(R.drawable.icon_back_gray)
-            handler.postDelayed({
-                binding.btnBack.setImageResource(R.drawable.icon_back_white)
-                finish()
-            }, 100)
+            presenter.backLoginActivity(BACK_LOGIN_ICON)
         }
 
         setupInputValidation()
@@ -59,7 +55,7 @@ class ForgetPasswordActivity : AppCompatActivity(), ForgetPasswordInterface {
             }
 
             override fun afterTextChanged(s: Editable?) {
-                presenter.onEmailChanged(s.toString().trim())
+                presenter.handleForgetPassword(s.toString().trim())
             }
         })
     }
@@ -69,16 +65,36 @@ class ForgetPasswordActivity : AppCompatActivity(), ForgetPasswordInterface {
         binding.txtErrorEmail.visibility = View.VISIBLE
     }
 
-    override fun hideEmailError() {
-        binding.txtErrorEmail.visibility = View.INVISIBLE
-    }
 
     override fun showToast(message: String) {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
     }
 
-    override fun finishActivity() {
-        finish()
+    override fun finishActivity(code: Int) {
+        when (code) {
+            BACK_LOGIN_TEXT -> {
+                val handler = Handler()
+                binding.txtLogin.setTextColor(resources.getColor(R.color.blue))
+                handler.postDelayed({
+                    binding.txtLogin.setTextColor(resources.getColor(R.color.black))
+                    finish()
+                }, 100)
+            }
+
+            BACK_LOGIN_ICON -> {
+                val handler = Handler()
+                binding.btnBack.setImageResource(R.drawable.icon_back_gray)
+                handler.postDelayed({
+                    binding.btnBack.setImageResource(R.drawable.icon_back_white)
+                    finish()
+                }, 100)
+            }
+
+            else -> {
+                finish()
+            }
+        }
+
     }
 
     override fun enableDisplay(status: Boolean) {

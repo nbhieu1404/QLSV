@@ -97,7 +97,7 @@ class RegisterPresenter(private val view: RegisterInterface) {
             ?.sendEmailVerification()
             ?.addOnSuccessListener {
                 view.showToast("Vui lòng kiểm tra email để xác thực")
-                view.finishActivity()
+                view.finishActivity(3)
             }
             ?.addOnFailureListener {
                 view.showToast("Gửi xác thực email thất bại")
@@ -112,5 +112,8 @@ class RegisterPresenter(private val view: RegisterInterface) {
             view.showToast("Đăng ký thất bại. Vui lòng thử lại.")
         }
         view.enableDisplay(true)
+    }
+    fun backLogin(code: Int) {
+        view.finishActivity(code)
     }
 }
